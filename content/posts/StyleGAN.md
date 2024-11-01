@@ -44,22 +44,49 @@ editPost:
 
 ## Introduction
 
-Large language models (LLMs) like GPT-4 have demonstrated remarkable abilities in generating text that resembles human language, but they also exhibit a concerning behavior: **hallucination**. Hallucination occurs when an AI model generates information that sounds plausible but is actually incorrect or fabricated. Understanding the causes and solutions to hallucination is crucial as AI models become more integrated into critical applications.
+The motivation for creating StyleGAN started from some issues with GANs. While GANs have a structure that can generate high-quality images, they face big challenges in controlling detailed styles or elements of the image. For example, in previous GAN models, even if they generate a person’s face, there were many limits in adjusting small details or styles of that face .
 
-<!--more-->
-
-## copy?
-
-Hallucination in AI refers to instances where a model produces responses not based on factual data or real-world knowledge. For example, when asked about a fictional event, an AI might fabricate a plausible-sounding answer rather than admitting it doesn't know. This can mislead users, especially in high-stakes fields like healthcare or law.
-
-### Example Image of Hallucination
-
-![Example of Hallucination](assets/image/structure.png)
+StyleGAN aims to overcome these limits of regular GAN models and achieve both control over image generation and high-quality, detailed images. StyleGAN’s goal is to create images that are more realistic and controllable. To achieve this, StyleGAN's design borrwed ideas from style transfer literature and added mechanisms to mix different styles.
 
 
-In this image, the AI model confidently provides an answer to a question based on nonexistent information, illustrating a typical hallucination case.
 
-## Causes of Hallucination
+
+## Basic Concepts of GANs and Limitations of Existing Models
+
+To better understand StyleGAN, this section will provide a brief explanation of its predecessors, GAN and Progressive Growing GAN (PGGAN) .....
+
+### GAN and Its Basic Structure
+
+GANs have a structure of two networks, the Generator and the Discriminator ,which compete and improve together. The Generator takes random noise as input to create fake images, while the Discriminator tries to distinguish between real and fake images. Through their Adverisal interaction in training, the Generator gradually improves and creates images that look more and more real.
+
+![GAN structure](/image/stylegan/ganstructure.png)
+*Fig. 1. Architecture of a generative adversarial network. (Image source: [www.kdnuggets.com/2017/01/generative-...-learning.html](https://www.kdnuggets.com/2017/01/generative-adversarial-networks-hot-topic-machine-learning.html))*
+
+For details, these two models compete with each other in training process. G(generator) tries to trick the discriminator. Otherwise D(discriminator) works hard not to be fooled.
+
+In other words, D and G are playing a **minmax** game to optimize the following loss function: 
+![Loss function](/image/stylegan/minmaxgame.png)
+
+
+### Deep Convolutional GAN (DCGAN)
+
+DCGAN is a model that starts with a latent vector and progressively upsamples it through a convolutional network. This approach has improved performance in the image domain. By using transposed convolutions, DCGAN effectively increases the image resolution, step by step. With this structure, vector arithmetic became possible, leading to advancements in GANs that aimed to control semantic information within images.
+
+![DCGAN structure](/image/stylegan/dcganstructure.png)
+*Fig. 2. Architecture of a DCGAN. (Image source: [https://www.researchgate.net/figure/DCGAN-Deep-Convolutional-Generative-Adversarial-Network-generator.....](https://www.researchgate.net/figure/DCGAN-Deep-Convolutional-Generative-Adversarial-Network-generator-used-for-LSUN_fig1_340884113))*
+
+
+### Progressive Growing GAN (PGGAN)
+
+Progressive Growing GAN, the predecessor of StyleGAN, is a model that improves GAN training stability by sequentially adding layers to gradually increase the image resolution. Instead of creating high-resolution images all at once, this method ensures stability by incrementally adding layers during training.
+
+![PGGAN structure](/image/stylegan/pggan.png)
+*Fig. 3. Architecture of a PGGAN. (Image source: [https://python.plainenglish.io/a-friendly-introduction-to-generative-adversarial-networks-gans-101f8de8d3b6]*)
+
+PGGAN applied WGAN-GP Loss to improve training stability, making it possible to generate high-resolution images. However, it had limitations in controlling specific details or styles within the images.
+
+
+## Main Idea of StyleGAN
 
 There are several reasons why AI models hallucinate:
 
@@ -68,23 +95,25 @@ There are several reasons why AI models hallucinate:
 3. **Bias in Training Data**: If the training data contains biases, the model may produce biased or incorrect information, perpetuating existing inaccuracies.
 
 
-
-![ffsfs](/image/structure.png)
-*Fig. 3. The evaluation framework for the FactualityPrompt benchmark. (Image source: Lee, et al. 2022)*
+### Mapping Network
 
 
 
-![ffsfs](/image/structure.png#center)
-{{</* figure align=center src="structure.png" */>}}
+### AdaIN
 
 
 
-
-
-
-
+### Stochastic Variation
 
 This graphic represents different sources of hallucination in AI models, illustrating how model architecture and data quality play a role.
+
+
+
+
+### Style Mixing
+
+
+
 
 ## Strategies for Mitigating Hallucination
 
