@@ -9,6 +9,12 @@ buildExpired = false
 pygmentsUseClasses = true
 
 
+additional-css = [ "/assets/css/style.css" ]
+
+
+
+
+
 [pagination]
 pagerSize = 5
 
@@ -138,3 +144,19 @@ weight = 30
 
 [markup.highlight]
 noClasses = false
+
+
+[[menu.main]]
+identifier = "Archive"
+name = "Archive"
+url = "/archives/"
+weight = 2
+
+[[menu.main]]
+identifier = "Search"
+name = "Search"
+url = "/search/"
+weight = 3
+
+[outputs]
+home = [ "HTML", "RSS", "JSON" ]
