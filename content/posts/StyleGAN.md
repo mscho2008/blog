@@ -3,7 +3,7 @@ author: ["Minsung Cho"]
 title: "StyleGAN : A Style-Based Generator Architecture for Generative Adversarial Networks"
 date: "2024-11-01"
 description: "Understanding StyleGAN, their causes, and potential ways to mitigate them."
-summary: "A deep dive into the phenomenon of hallucinations in AI models, exploring causes, consequences, and mitigation strategies."
+summary: "StyleGAN"
 tags: ["AI", "Machine Learning", "Generative models"]
 categories: ["Review Paper", "AI"]
 ShowToc: true
@@ -53,7 +53,8 @@ StyleGAN aims to overcome these limits of regular GAN models and achieve both co
 
 ## Basic Concepts of GANs and Limitations of Existing Models
 
-To better understand StyleGAN, this section will provide a brief explanation of its predecessors, GAN and Progressive Growing GAN (PGGAN) .....
+
+To better understand StyleGAN, this section will provide a brief explanation of its predecessors, GAN, Deep Convolutional GAN(DCGAN), and Progressive Growing GAN (PGGAN)
 
 ### GAN and Its Basic Structure
 
@@ -88,24 +89,57 @@ PGGAN applied WGAN-GP Loss to improve training stability, making it possible to 
 
 ## Main Idea of StyleGAN
 
-There are several reasons why AI models hallucinate:
+These are brief sketches of the main idea.
 
-1. **Training Data Quality**: If the model’s training data is incomplete or inaccurate, it may lack the necessary information to generate factually correct responses.
-2. **Over-reliance on Pattern Recognition**: Models are optimized to generate coherent and contextually appropriate responses rather than true or accurate ones.
-3. **Bias in Training Data**: If the training data contains biases, the model may produce biased or incorrect information, perpetuating existing inaccuracies.
+- **Mapping Network**: Instead of directly using the z-vector sampled from the Gaussian distribution, it is mapped to the w domain for use.
 
+- **Constant input** : Start with 4x4x512 tensor rather than later vector
+
+- **AdaIN**: Using AdaIN, which showed effective performance in feed-forward style transfer networks.  We can extract and apply style information from other selected data.
+
+
+
+- **Stochastic Variation**: 
+
+
+
+- **Style Mixing** : 
 
 ### Mapping Network
 
+![Mapping Network](/image/stylegan/mappingnetwork.png)
+*Fig. 4. Mapping Network for StyleGAN. (Image source: [ Karras, T., Laine, S., & Aila, T. (2019). "A Style-Based Generator Architecture for Generative Adversarial Networks". IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 4401–4410.]*)
+
+Let’s assume that the distribution of the training set is like (a) in Figure 4, where there is almost no data in the top left part of the distribution. Since z is sampled from a Gaussian distribution, it is simillar to sampling from a spherical shape. When we look at (b) in Figure 4, 
+we can see that in the top left of the sphere, **rapid changes in style can easily occur** during the interpolation process. Also, we can observe that the factors of variation are not linear, and we refer to this as being **entangled**.
+
+In StyleGAN, instead of using the z vector directly, it is mapped to the w space, where the w vector is then used. In the W space, the factors of variation become more linear ((c) in Figure4), because they no longer need to follow a specific distribution.
+
+![Mapping Network](/image/stylegan/mappingnetwork2.png#center)
+*Fig. 5. Mapping Network for StyleGAN. (Image source: [ Karras, T., Laine, S., & Aila, T. (2019). "A Style-Based Generator Architecture for Generative Adversarial Networks". IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 4401–4410.]*)
+
+
+### Constant input
+
+The style-based generator takes w as input, so unlike PGGAN or other GANs, it no longer requires convolution operations on z. As a result, the **synthesis network starts with a 4x4x512 constant tensor**. Starting from a constant rather than latent vector has proven to yield better performance, a result confirmed through empirical observation.
 
 
 ### AdaIN
+
+This method allows for adding multiple style details as the layers progress, creating more diverse images. Since style information is taken from other selected data, there are **no parameters to train**.
+
+It is used to process the result of the convolution operation. Let’s assume that the convolution output is a tensor made up of n channels, and each channel feature is represented by x_i. The latent w undergoes an affine transformation to produce y_{s,i} and y_{b,i}. These values are used to **scale and add bias** to the normalized x_i. So the mean and variance are modified. This can also be seen as a type of style transfer.
+
+![AdaIN](/image/stylegan/adain.png#center)
+*Fig. 6. How AdaIN works in Style GAN. (Image source: [https://velog.ioStyleGAN-A-Style-Based-Generator-Architecture-for-Generative-Adversarial-Networks.....](https://velog.io/@minjung-s/%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0StyleGAN-A-Style-Based-Generator-Architecture-for-Generative-Adversarial-Networks))*
+
+
 
 
 
 ### Stochastic Variation
 
-This graphic represents different sources of hallucination in AI models, illustrating how model architecture and data quality play a role.
+
 
 
 
@@ -115,11 +149,11 @@ This graphic represents different sources of hallucination in AI models, illustr
 
 
 
-## Strategies for Mitigating Hallucination
+## Disentanglement Studies
 
 **There** are ongoing efforts to reduce hallucinations in AI systems, mainly focusing on data and model improvement.
 
-### Data Augmentation and Fact Verification
+### Perceptual path length
 
 One approach is to enhance data quality and use fact-verification systems that validate the model's output. Below is a sample Python function for verifying the accuracy of a statement using a hypothetical fact-checking API.
 
@@ -129,3 +163,17 @@ The SAFE evaluation metric is **F1 @ K**. The motivation is that model response 
 - *long*: measured by recall, the percentage of provided facts among all relevant facts that should appear in the response. Therefore we want to consider the number of supported facts up to *K*.
 
 Given the model response *y*, the metric **F1 @ K** is defined as:
+
+
+### Linear separability
+
+
+
+## FFHQ DATASET
+
+
+
+___
+
+
+SADLY
